@@ -1,41 +1,40 @@
-version: "3.8" 
-
 services:
   nginx:
     image: nginx:alpine
     container_name: todo_app-nginx
     restart: unless-stopped
     ports:
-      - "8000:80" 
+      - "8000:80"
     volumes:
-      - ./src:/var/www  
+      - ./src:/var/www
+      - ./docker-compose/nginx:/etc/nginx/conf.d/
     networks:
       - todo_app_network
 
   app:
     build:
       context: ./
-      dockerfile: dockerfile2
+      dockerfile: Dockerfile
     container_name: todo_app-app
     restart: unless-stopped
     working_dir: /var/www/
     volumes:
-      - ./src:/var/www 
+      - ./src:/var/www
     networks:
       - todo_app_network
 
   db:
     image: mysql:5.6
-    container_name: todo_app-db  
+    container_name: todo_app-db
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: my-secret-pwd
-      MYSQL_USER: "${DB_USER}"  
+      MYSQL_USER: "${DB_USERNAME}" # Cambiado a DB_USERNAME
       MYSQL_DATABASE: "${DB_DATABASE}"
     ports:
-      - "3306:3306"  
+      - "3306:3306"
     volumes:
-      - todo_app_db_volume:/var/lib/mysql  
+      - todo_app_db_volume:/var/lib/mysql
     networks:
       - todo_app_network
 
